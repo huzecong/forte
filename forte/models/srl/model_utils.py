@@ -10,6 +10,38 @@ import texar.torch as tx
 LSTMState = Tuple[torch.Tensor, torch.Tensor]
 
 
+def load_glove(filename: str, vocab: Dict[str, int],
+               word_vecs: np.ndarray) -> np.ndarray:
+    r"""Loads embeddings in the glove text format in which each line is
+    ``<word-string> <embedding-vector>``. Dimensions of the embedding vector
+    are separated with whitespace characters.
+
+    Args:
+        filename (str): Path to the embedding file.
+        vocab (dict): A dictionary that maps token strings to integer index.
+            Tokens not in :attr:`vocab` are not read.
+        word_vecs: A 2D numpy array of shape `[vocab_size, embed_dim]`
+            which is updated as reading from the file.
+
+    Returns:
+        The updated :attr:`word_vecs`.
+    """
+    with open(filename) as fin:
+        for idx, line in enumerate(fin):
+            # Surprise! The word may contain non-breaking spaces! (\xa0)
+            vec = line.strip().split(' ')
+            if len(vec) == 0:
+                continue
+            word, vec = vec[0], vec[1:]
+            if word not in vocab:
+                continue
+            if len(vec) != word_vecs.shape[1]:
+                raise ValueError("Inconsistent word vector sizes: %d vs %d" %
+                                 (len(vec), word_vecs.shape[1]))
+            word_vecs[vocab[word]] = np.array([float(v) for v in vec])
+    return word_vecs
+
+
 class CustomLSTMCell(tx.core.RNNCellBase[LSTMState]):
     # pylint: disable=super-init-not-called
     def __init__(self, input_size: int, hidden_size: int, dropout: float = 0.0):

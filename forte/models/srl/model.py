@@ -10,6 +10,7 @@ import texar.torch as tx
 
 from forte.models.srl import model_utils as utils
 from forte.models.srl.data import SRLSpan, Span
+from forte.models.srl.model_utils import load_glove
 
 
 class LabeledSpanGraphNetwork(tx.ModuleBase):
@@ -41,7 +42,7 @@ class LabeledSpanGraphNetwork(tx.ModuleBase):
                     vocab=self.word_vocab.token_to_id_map_py, hparams={
                         "file": self._hparams.context_embeddings.path,
                         "dim": self._hparams.context_embeddings.size,
-                        "read_fn": "load_glove",
+                        "read_fn": load_glove,
                     }).word_vecs)
         if head_embed is not None:
             self.head_embed = tx.modules.WordEmbedder(head_embed)
@@ -51,7 +52,7 @@ class LabeledSpanGraphNetwork(tx.ModuleBase):
                     vocab=self.word_vocab.token_to_id_map_py, hparams={
                         "file": self._hparams.head_embeddings.path,
                         "dim": self._hparams.head_embeddings.size,
-                        "read_fn": "load_glove",
+                        "read_fn": load_glove,
                     }).word_vecs)
         self.span_length_embed = tx.modules.PositionEmbedder(
             position_size=self._hparams.max_arg_width, hparams={
