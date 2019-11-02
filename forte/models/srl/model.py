@@ -1,6 +1,6 @@
 import math
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 from torch import nn
@@ -26,25 +26,33 @@ class LabeledSpanGraphNetwork(tx.ModuleBase):
     __torch_device__: torch.device
 
     def __init__(self, word_vocab: tx.data.Vocab, char_vocab: tx.data.Vocab,
+                 word_embed: Optional[torch.Tensor] = None,
+                 head_embed: Optional[torch.Tensor] = None,
                  hparams=None):
         super().__init__(hparams)
 
         # Word vocabulary & representation
         self.word_vocab = word_vocab
-        self.word_embed = tx.modules.WordEmbedder(
-            init_value=tx.data.Embedding(
-                vocab=self.word_vocab.token_to_id_map_py, hparams={
-                    "file": self._hparams.context_embeddings.path,
-                    "dim": self._hparams.context_embeddings.size,
-                    "read_fn": "load_glove",
-                }).word_vecs)
-        self.head_embed = tx.modules.WordEmbedder(
-            init_value=tx.data.Embedding(
-                vocab=self.word_vocab.token_to_id_map_py, hparams={
-                    "file": self._hparams.head_embeddings.path,
-                    "dim": self._hparams.head_embeddings.size,
-                    "read_fn": "load_glove",
-                }).word_vecs)
+        if word_embed is not None:
+            self.word_embed = tx.modules.WordEmbedder(word_embed)
+        else:
+            self.word_embed = tx.modules.WordEmbedder(
+                init_value=tx.data.Embedding(
+                    vocab=self.word_vocab.token_to_id_map_py, hparams={
+                        "file": self._hparams.context_embeddings.path,
+                        "dim": self._hparams.context_embeddings.size,
+                        "read_fn": "load_glove",
+                    }).word_vecs)
+        if head_embed is not None:
+            self.head_embed = tx.modules.WordEmbedder(head_embed)
+        else:
+            self.head_embed = tx.modules.WordEmbedder(
+                init_value=tx.data.Embedding(
+                    vocab=self.word_vocab.token_to_id_map_py, hparams={
+                        "file": self._hparams.head_embeddings.path,
+                        "dim": self._hparams.head_embeddings.size,
+                        "read_fn": "load_glove",
+                    }).word_vecs)
         self.span_length_embed = tx.modules.PositionEmbedder(
             position_size=self._hparams.max_arg_width, hparams={
                 "dim": self._hparams.feature_size,

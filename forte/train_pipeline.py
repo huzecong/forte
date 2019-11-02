@@ -1,4 +1,3 @@
-# pylint: disable=logging-fstring-interpolation
 import logging
 from typing import Optional, List
 
@@ -44,9 +43,9 @@ class TrainPipeline:
             self.evaluator = evaluator
 
     def run(self):
-        logging.info("Preparing the pipeline")
+        logger.info("Preparing the pipeline")
         self.prepare()
-        logging.info("Initializing the trainer")
+        logger.info("Initializing the trainer")
 
         # initialize the pipeline after prepare step, since prepare will update
         # the resources
@@ -55,7 +54,7 @@ class TrainPipeline:
             logger.info("Initializing the predictor")
             self.predictor.initialize(self.resource, self.configs)
 
-        logging.info("The pipeline is training")
+        logger.info("The pipeline is training")
         self.train()
         self.finish()
 
@@ -88,7 +87,7 @@ class TrainPipeline:
             if self.trainer.stop_train():
                 return
 
-            logging.info(f"End of epoch {epoch}")
+            logger.info("End of epoch %d", epoch)
 
     def _validate(self, epoch: int):
         validation_result = {"epoch": epoch}

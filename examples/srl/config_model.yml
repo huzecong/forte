@@ -1,0 +1,46 @@
+initial_lr: 1e-3
+lr_decay: 0.999
+max_grad_norm: 5.0
+
+print_frequency: 50
+lr_decay_frequency: 100
+random_seed: 19260817
+
+srl_model:
+    filter_widths: [3, 4, 5]
+    filter_size: 50
+    char_embedding_size: 8
+    context_embeddings:
+        path: "embeddings/glove.840B.300d.txt"
+        datasets: "txt"
+        size: 300
+        lowercase: no
+    head_embeddings:
+        path: "embeddings/glove_50_300_2.txt"
+        datasets: "txt"
+        size: 300
+        lowercase: no
+    elmo:
+        path: null
+        config: null
+        dim: 256
+
+    contextualizer: "lstm"
+    contextualization_size: 200
+    contextualization_layers: 3
+    ffnn_size: 150
+    ffnn_depth: 2
+
+    feature_size: 20
+    max_span_width: 30
+
+    model_heads: yes
+    num_attention_heads: 1
+
+    max_arg_width: 30
+    argument_ratio: 0.8
+    predicate_ratio: 0.4
+
+    lexical_dropout_rate: 0.5
+    dropout_rate: 0.2
+    lstm_dropout_rate: 0.4

@@ -1,0 +1,12 @@
+train_path: "data/train/"
+val_path: "data/dev/"
+test_path: "data/test/"
+
+max_tokens_per_batch: 700
+num_epochs: 200
+
+dataset:
+  batch_size: 40
+  shuffle: true
+  shuffle_buffer_size: 1000
+  lazy_strategy: "process"

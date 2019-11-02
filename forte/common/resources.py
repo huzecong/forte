@@ -1,6 +1,6 @@
 from pathlib import Path
 import pickle
-from typing import Union, Dict, List, Callable, Optional, Any
+from typing import Union, Dict, List, Callable, Optional, Any, overload
 from collections.abc import KeysView
 
 __all__ = [
@@ -56,8 +56,16 @@ class Resources:
     def keys(self) -> KeysView:
         return self.resources.keys()
 
+    @overload
     def get(self, key: str):
-        return self.resources.get(key)
+        ...
+
+    @overload
+    def get(self, key: str, default=None):
+        ...
+
+    def get(self, *args):
+        return self.resources.get(*args)
 
     def update(self, **kwargs):
         self.resources.update(**kwargs)
